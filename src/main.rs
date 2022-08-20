@@ -58,6 +58,8 @@ impl EventHandler for Handler {
 			if let Err(e) = m.delete(&c.http).await {
 				eprintln!("Failed to delete message because {}", e);
 			};
+		} else {
+			return
 		}
 		let uwu_sender = uwuify_str_sse(&sender);
 		let uwuized = uwuify_str_sse(&content);
