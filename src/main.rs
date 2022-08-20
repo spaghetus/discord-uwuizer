@@ -54,7 +54,7 @@ impl EventHandler for Handler {
 		let sender = m.author_nick(&c.http).await.unwrap_or_else(|| m.author.name.clone());
 		let existing_embeds = m.embeds.clone();
 		let existing_attachments = m.attachments.clone();
-		if existing_embeds.is_empty() && attachments.is_empty() {
+		if existing_embeds.is_empty() && existing_attachments.is_empty() {
 			if let Err(e) = m.delete(&c.http).await {
 				eprintln!("Failed to delete message because {}", e);
 			};
