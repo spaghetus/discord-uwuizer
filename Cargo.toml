@@ -1,0 +1,22 @@
+[package]
+name = "discord-uwuizer"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+serenity = {version = "*", default-features = false, features = [
+    "builder",
+    "cache",
+    "chrono",
+    "client",
+    "gateway",
+    "model",
+    "http",
+    "utils",
+    "rustls_backend"
+]}
+tokio = {version = "*", features = ["full"]}
+dotenv = "*"
+uwuify = "*"
