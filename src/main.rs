@@ -52,9 +52,13 @@ impl EventHandler for Handler {
 		
 		let content = m.content.clone();
 		let sender = m.author_nick(&c.http).await.unwrap_or_else(|| m.author.name.clone());
-		if let Err(e) = m.delete(&c.http).await {
-			eprintln!("Failed to delete message because {}", e);
-		};
+		let existing_embeds = m.embeds.clone();
+		let existing_attachments = m.attachments.clone();
+		if existing_embeds.is_empty() && attachments.is_empty() {
+			if let Err(e) = m.delete(&c.http).await {
+				eprintln!("Failed to delete message because {}", e);
+			};
+		}
 		let uwu_sender = uwuify_str_sse(&sender);
 		let uwuized = uwuify_str_sse(&content);
 		let author_pfp = m.author.static_avatar_url();
