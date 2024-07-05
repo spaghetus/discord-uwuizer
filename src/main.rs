@@ -60,7 +60,12 @@ impl EventHandler for Handler {
 		}
 
 		let content = m.content.clone();
-		let content: String = content.chars().map(|c| (c as u8) as char).collect();
+		let content: String = content
+			.chars()
+			.flat_map(|c| (c as u32).to_le_bytes())
+			.filter(|b| b > &0)
+			.map(|c| c as char)
+			.collect();
 		let sender = m
 			.author_nick(&c.http)
 			.await
