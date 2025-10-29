@@ -48,16 +48,42 @@ impl EventHandler for Handler {
 			return;
 		}
 
-		// Stop if the channel is not uwu
-		if !m.channel(&c.http).await.map_or(false, |channel| {
-			channel.guild().map_or(false, |channel| {
-				channel.topic.map_or(false, |topic| {
-					topic.contains(UWU_STRING.unwrap_or(FALLBACK_UWU))
-				})
-			})
-		}) {
+		let Ok(channel) = m.channel(&c.http).await else {
 			return;
-		}
+		};
+		let Some(channel) = channel.guild() else {
+			return;
+		};
+		let Some(topic) = channel.topic else { return };
+
+		let filter = if topic.contains(UWU_STRING.unwrap_or(FALLBACK_UWU)) {
+			uwuify_str_sse
+		} else if topic.contains("!AAA") {
+			|text: &str| {
+				text.chars()
+					.filter(|c: &char| match c {
+						_ if c.is_whitespace() => true,
+						_ if c.is_ascii_punctuation() => true,
+						_ if !c.is_ascii() => false,
+						_ if "AEIOUYaeiouy".contains(*c) => true,
+						_ => false,
+					})
+					.collect()
+			}
+		} else {
+			return;
+		};
+
+		// // Stop if the channel is not uwu
+		// if !m.channel(&c.http).await.is_ok_and(|channel| {
+		// 	channel.guild().is_some_and(|channel| {
+		// 		channel
+		// 			.topic
+		// 			.is_some_and(|topic| topic.contains(UWU_STRING.unwrap_or(FALLBACK_UWU)))
+		// 	})
+		// }) {
+		// 	return;
+		// }
 
 		let content = m.content.clone();
 		let content: String = content
@@ -80,8 +106,8 @@ impl EventHandler for Handler {
 		} else {
 			return;
 		}
-		let uwu_sender = uwuify_str_sse(&sender);
-		let uwuized = uwuify_str_sse(&content);
+		let uwu_sender = filter(&sender);
+		let uwuized = filter(&content);
 		let author_pfp = m.author.static_avatar_url();
 		if let Err(e) = m
 			.channel_id
